@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: ../docker/api.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_DIR=/data
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: ../docker/web.Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      # Frontend will auto-point to http://<EC2-IP>:8000 if VITE_API_BASE is empty
+      - VITE_API_BASE=
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  data:
